@@ -7,7 +7,7 @@ import java.util.concurrent.locks.Lock;
 /**
  * A reentrant mutual exclusion lock implemented using semaphore.
  * 
- * @author Yin
+ * @author Yin Poon
  */
 public class ReentrantSemaphoreLock implements Lock {
 
