@@ -11,7 +11,9 @@ import java.util.concurrent.locks.Lock;
  */
 public class ReentrantSemaphoreLock implements Lock {
 
-    private Semaphore lock;
+    private final int SEMAPHOREPERMIT;
+
+    private Semaphore semaphore;
 
     /**
      * Default Constructor
@@ -19,8 +21,9 @@ public class ReentrantSemaphoreLock implements Lock {
      * @param permits
      *            The semaphore value
      */
-    public ReentrantSemaphoreLock(int permits) {
-        this.lock = new Semaphore(permits);
+    public ReentrantSemaphoreLock() {
+        this.SEMAPHOREPERMIT = 1;
+        this.semaphore = new Semaphore(SEMAPHOREPERMIT, true);
     }
 
     /**
