@@ -22,7 +22,9 @@ public class Tester extends Thread {
     }
 
     public void run() {
+        System.out.println("Thread " + threadNumber + ": Add 1");
         example.inc(1);
+        System.out.println("Thread " + threadNumber + ": " + example.getCounter());
         example.delay_until_10();
         System.out.println("Thread " + threadNumber + ": " + example.getCounter());
     }

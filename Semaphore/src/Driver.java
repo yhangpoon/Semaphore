@@ -25,6 +25,12 @@ public class Driver {
         thread3.start();
         thread4.start();
         thread5.start();
-    }
 
+        for (int i = 0; i < 5; i++) {
+            System.out.println("Driver: Add 1 ");
+            example.inc(1);
+            System.out.println("Driver: " + example.getCounter());
+        }
+
+    }
 }
