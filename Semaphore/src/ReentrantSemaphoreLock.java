@@ -1,3 +1,4 @@
+import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -11,7 +12,7 @@ import java.util.concurrent.locks.Lock;
  */
 public class ReentrantSemaphoreLock implements Lock {
 
-    private final int SEMAPHOREPERMIT;
+    private final int SEMAPHOREPERMIT = 1;
 
     private Semaphore semaphore;
 
@@ -22,7 +23,6 @@ public class ReentrantSemaphoreLock implements Lock {
      *            The semaphore value
      */
     public ReentrantSemaphoreLock() {
-        this.SEMAPHOREPERMIT = 1;
         this.semaphore = new Semaphore(SEMAPHOREPERMIT, true);
     }
 
@@ -31,8 +31,11 @@ public class ReentrantSemaphoreLock implements Lock {
      */
     @Override
     public void lock() {
-        // TODO Auto-generated method stub
-
+        try {
+            semaphore.acquire();
+        } catch (InterruptedException e) {
+            System.err.println(e.getMessage());
+        }
     }
 
     /**
@@ -42,8 +45,7 @@ public class ReentrantSemaphoreLock implements Lock {
      */
     @Override
     public void lockInterruptibly() throws InterruptedException {
-        // TODO Auto-generated method stub
-
+        semaphore.acquire();
     }
 
     /**
@@ -51,8 +53,7 @@ public class ReentrantSemaphoreLock implements Lock {
      */
     @Override
     public boolean tryLock() {
-        // TODO Auto-generated method stub
-        return false;
+        return semaphore.tryAcquire();
     }
 
     /**
@@ -63,8 +64,7 @@ public class ReentrantSemaphoreLock implements Lock {
      */
     @Override
     public boolean tryLock(long time, TimeUnit unit) throws InterruptedException {
-        // TODO Auto-generated method stub
-        return false;
+        return semaphore.tryAcquire(time, unit);
     }
 
     /**
@@ -72,8 +72,7 @@ public class ReentrantSemaphoreLock implements Lock {
      */
     @Override
     public void unlock() {
-        // TODO Auto-generated method stub
-
+        semaphore.release();
     }
 
     /**
@@ -81,8 +80,7 @@ public class ReentrantSemaphoreLock implements Lock {
      */
     @Override
     public Condition newCondition() {
-        // TODO Auto-generated method stub
-        return null;
+        return new SemaphoreCondition(this);
     }
 
     /**
@@ -91,33 +89,76 @@ public class ReentrantSemaphoreLock implements Lock {
     private class SemaphoreCondition implements Condition {
 
         /**
-         * Causes the current thread to wait until it is signaled or
-         * interrupted.
+         * The associated lock.
          */
-        @Override
-        public void await() {
+        private Lock lock;
 
+        /**
+         * The queue that handles the waiters.
+         */
+        private Semaphore semaphore;
+
+        /**
+         * Number of waiters in the semaphore queue.
+         */
+        private int waiters;
+
+        /**
+         * Default Constructor.
+         */
+        public SemaphoreCondition(ReentrantSemaphoreLock lock) {
+            this.lock = lock;
+            semaphore = new Semaphore(0, true);
+            waiters = 0;
         }
 
         /**
-         * Causes the current thread to wait until it is signalled.
+         * Causes the current thread to wait until it is signaled or
+         * interrupted.
+         * 
+         * @throws InterruptedException
+         */
+        @Override
+        public void await() throws InterruptedException {
+            lock.unlock();
+            waiters++;
+            semaphore.acquire();
+            lock.lock();
+        }
+
+        /**
+         * Causes the current thread to wait until it is signaled.
          */
         @Override
         public void awaitUninterruptibly() {
-            // TODO Auto-generated method stub
+            lock.unlock();
+            waiters++;
+            try {
+                semaphore.acquire();
+            } catch (InterruptedException e) {
+                System.err.println(e.getMessage());
+            }
+            lock.lock();
 
         }
 
         /**
-         * Causes the current thread to wait until it is signalled or
+         * Causes the current thread to wait until it is signaled or
          * interrupted, or the specified waiting time elapses.
          * 
          * @throws InterruptedException
          */
         @Override
         public long awaitNanos(long nanosTimeout) throws InterruptedException {
-            // TODO Auto-generated method stub
-            return 0;
+            lock.unlock();
+            waiters++;
+
+            long startTime = System.nanoTime();
+            semaphore.tryAcquire(nanosTimeout, TimeUnit.NANOSECONDS);
+            long endTime = System.nanoTime();
+
+            waiters--;
+            return nanosTimeout - (endTime - startTime);
         }
 
         /**
@@ -128,20 +169,31 @@ public class ReentrantSemaphoreLock implements Lock {
          */
         @Override
         public boolean await(long time, TimeUnit unit) throws InterruptedException {
-            // TODO Auto-generated method stub
-            return false;
+            lock.unlock();
+            waiters++;
+            boolean status = semaphore.tryAcquire(time, unit);
+            waiters--;
+
+            return status;
         }
 
         /**
-         * Causes the current thread to wait until it is signalled or
+         * Causes the current thread to wait until it is signaled or
          * interrupted, or the specified deadline elapses.
          * 
          * @throws InterruptedException
          */
         @Override
         public boolean awaitUntil(Date deadline) throws InterruptedException {
-            // TODO Auto-generated method stub
-            return false;
+            lock.unlock();
+            waiters++;
+
+            Date currentDate = Calendar.getInstance().getTime();
+            long timeout = deadline.getTime() - currentDate.getTime();
+            boolean status = semaphore.tryAcquire(timeout, TimeUnit.MILLISECONDS);
+
+            waiters--;
+            return status;
         }
 
         /**
@@ -149,7 +201,8 @@ public class ReentrantSemaphoreLock implements Lock {
          */
         @Override
         public void signal() {
-
+            waiters--;
+            semaphore.release();
         }
 
         /**
@@ -157,8 +210,8 @@ public class ReentrantSemaphoreLock implements Lock {
          */
         @Override
         public void signalAll() {
-            // TODO Auto-generated method stub
-
+            semaphore.release(waiters);
+            waiters = 0;
         }
 
     } // SemaphoreCondition
