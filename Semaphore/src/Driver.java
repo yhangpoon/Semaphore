@@ -31,8 +31,20 @@ public class Driver {
         thread5.start();
 
         for (int i = 0; i < 5; i++) {
-            System.out.println("Driver: Add 3 ");
-            example.inc(3);
+            System.out.println("Driver: Add 2 ");
+            example.inc(2);
+            System.out.println("Driver: Counter = " + example.getCounter());
+        }
+
+        try {
+            Thread.sleep(10);
+        } catch (InterruptedException e) {
+            System.err.println(e.getMessage());
+        }
+
+        for (int i = 0; i < 5; i++) {
+            System.out.println("Driver: Add 1 ");
+            example.inc(1);
             System.out.println("Driver: Counter = " + example.getCounter());
         }
 
@@ -61,10 +73,21 @@ public class Driver {
         thread10.start();
 
         for (int i = 0; i < 5; i++) {
-            System.out.println("Driver: Add 3 ");
-            example2.inc(3);
+            System.out.println("Driver: Add 2 ");
+            example2.inc(2);
             System.out.println("Driver: Counter = " + example2.getCounter());
         }
 
+        try {
+            Thread.sleep(10);
+        } catch (InterruptedException e) {
+            System.err.println(e.getMessage());
+        }
+
+        for (int i = 0; i < 5; i++) {
+            System.out.println("Driver: Add 1 ");
+            example2.inc(1);
+            System.out.println("Driver: Counter = " + example2.getCounter());
+        }
     }
 }
