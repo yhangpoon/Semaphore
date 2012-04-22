@@ -7,6 +7,9 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class ExampleFromClass extends Example {
 
+    /**
+     * Default Constructor.
+     */
     public ExampleFromClass() {
         this.lock = new ReentrantLock();
         this.odd = lock.newCondition();

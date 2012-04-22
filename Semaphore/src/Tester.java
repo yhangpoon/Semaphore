@@ -28,6 +28,10 @@ public class Tester extends Thread {
         this.threadNumber = threadNumber;
     }
 
+    /**
+     * The routine of this thread.
+     */
+    @Override
     public void run() {
         System.out.println("Thread " + threadNumber + ": Add 1");
         example.inc(1);
