@@ -14,9 +14,16 @@ public class Tester extends Thread {
     /**
      * The Example Test Case.
      */
-    private ExampleWithSemaphore example;
+    private Example example;
 
-    public Tester(ExampleWithSemaphore example, int threadNumber) {
+    /**
+     * Default Constructor.
+     * 
+     * @param example
+     *            -
+     * @param threadNumber
+     */
+    public Tester(Example example, int threadNumber) {
         this.example = example;
         this.threadNumber = threadNumber;
     }

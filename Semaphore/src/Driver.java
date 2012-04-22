@@ -13,6 +13,7 @@ public class Driver {
      */
     public static void main(String[] args) {
 
+        // Test on my version
         System.out.println("Testing with My Version of Semaphore Lock");
 
         ExampleWithSemaphore example = new ExampleWithSemaphore();
@@ -35,15 +36,17 @@ public class Driver {
             System.out.println("Driver: Counter = " + example.getCounter());
         }
 
+        // Wait
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             System.err.println(e.getMessage());
         }
 
+        // Test on library version
         System.out.println("\n");
         System.out.println("Testing with Library Version");
-        ExampleWithSemaphore example2 = new ExampleWithSemaphore();
+        ExampleFromClass example2 = new ExampleFromClass();
 
         Tester thread6 = new Tester(example2, 6);
         Tester thread7 = new Tester(example2, 7);

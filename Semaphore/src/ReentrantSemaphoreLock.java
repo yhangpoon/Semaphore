@@ -12,8 +12,14 @@ import java.util.concurrent.locks.Lock;
  */
 public class ReentrantSemaphoreLock implements Lock {
 
+    /**
+     * Semaphore initial permit amount.
+     */
     private final int SEMAPHOREPERMIT = 1;
 
+    /**
+     * Semaphore to handle the locking mechanism.
+     */
     private Semaphore semaphore;
 
     /**
@@ -139,7 +145,6 @@ public class ReentrantSemaphoreLock implements Lock {
                 System.err.println(e.getMessage());
             }
             lock.lock();
-
         }
 
         /**
@@ -158,7 +163,12 @@ public class ReentrantSemaphoreLock implements Lock {
             long endTime = System.nanoTime();
 
             waiters--;
-            return nanosTimeout - (endTime - startTime);
+            long result = nanosTimeout - (endTime - startTime);
+
+            if (result > 0) {
+                lock.lock();
+            }
+            return result;
         }
 
         /**
@@ -170,10 +180,14 @@ public class ReentrantSemaphoreLock implements Lock {
         @Override
         public boolean await(long time, TimeUnit unit) throws InterruptedException {
             lock.unlock();
+
             waiters++;
             boolean status = semaphore.tryAcquire(time, unit);
             waiters--;
 
+            if (status) {
+                lock.lock();
+            }
             return status;
         }
 
@@ -193,6 +207,9 @@ public class ReentrantSemaphoreLock implements Lock {
             boolean status = semaphore.tryAcquire(timeout, TimeUnit.MILLISECONDS);
 
             waiters--;
+            if (status) {
+                lock.lock();
+            }
             return status;
         }
 
