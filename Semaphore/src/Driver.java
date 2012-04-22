@@ -12,7 +12,10 @@ public class Driver {
      *            standard input arguments
      */
     public static void main(String[] args) {
-        Example example = new Example();
+
+        System.out.println("Testing with My Version of Semaphore Lock");
+
+        ExampleWithSemaphore example = new ExampleWithSemaphore();
 
         Tester thread1 = new Tester(example, 1);
         Tester thread2 = new Tester(example, 2);
@@ -27,9 +30,37 @@ public class Driver {
         thread5.start();
 
         for (int i = 0; i < 5; i++) {
-            System.out.println("Driver: Add 1 ");
-            example.inc(1);
-            System.out.println("Driver: " + example.getCounter());
+            System.out.println("Driver: Add 3 ");
+            example.inc(3);
+            System.out.println("Driver: Counter = " + example.getCounter());
+        }
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            System.err.println(e.getMessage());
+        }
+
+        System.out.println("\n");
+        System.out.println("Testing with Library Version");
+        ExampleWithSemaphore example2 = new ExampleWithSemaphore();
+
+        Tester thread6 = new Tester(example2, 6);
+        Tester thread7 = new Tester(example2, 7);
+        Tester thread8 = new Tester(example2, 8);
+        Tester thread9 = new Tester(example2, 9);
+        Tester thread10 = new Tester(example2, 10);
+
+        thread6.start();
+        thread7.start();
+        thread8.start();
+        thread9.start();
+        thread10.start();
+
+        for (int i = 0; i < 5; i++) {
+            System.out.println("Driver: Add 3 ");
+            example2.inc(3);
+            System.out.println("Driver: Counter = " + example2.getCounter());
         }
 
     }

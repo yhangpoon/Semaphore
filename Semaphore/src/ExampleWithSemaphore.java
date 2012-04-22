@@ -6,7 +6,7 @@ import java.util.concurrent.locks.Lock;
  * 
  * @author Yin
  */
-public class Example {
+public class ExampleWithSemaphore {
 
     /**
      * Counter.
@@ -31,7 +31,7 @@ public class Example {
     /**
      * Default Constructor.
      */
-    public Example() {
+    public ExampleWithSemaphore() {
         this.counter = 0;
     }
 
@@ -77,7 +77,9 @@ public class Example {
      * @return the counter
      */
     public long getCounter() {
-        return counter;
+        // lock.lock();
+        long result = counter;
+        // lock.unlock();
+        return result;
     }
-
 }
